@@ -11,6 +11,8 @@ const request = require('request');
 // Purest strategies.
 const purest = require('purest')({ request });
 const purestConfig = require('@purest/providers');
+const { getAbsoluteServerUrl } = require('strapi-utils');
+const jwt = require('jsonwebtoken');
 
 /**
  * Connect thanks to a third-party provider.
@@ -22,7 +24,7 @@ const purestConfig = require('@purest/providers');
  * @return  {*}
  */
 
-exports.connect = (provider, query) => {
+const connect = (provider, query) => {
   const access_token = query.access_token || query.code || query.oauth_token;
 
   return new Promise((resolve, reject) => {
@@ -55,15 +57,15 @@ exports.connect = (provider, query) => {
           })
           .get();
 
-        if (_.isEmpty(_.find(users, { provider })) && !advanced.allow_register) {
+        const user = _.find(users, { provider });
+
+        if (_.isEmpty(user) && !advanced.allow_register) {
           return resolve([
             null,
             [{ messages: [{ id: 'Auth.advanced.allow_register' }] }],
             'Register action is actualy not available.',
           ]);
         }
-
-        const user = _.find(users, { provider });
 
         if (!_.isEmpty(user)) {
           return resolve([user, null]);
@@ -158,6 +160,21 @@ const getProfile = async (provider, query, callback) => {
             });
           }
         });
+      break;
+    }
+    case 'cognito': {
+      // get the id_token
+      const idToken = query.id_token;
+      // decode the jwt token
+      const tokenPayload = jwt.decode(idToken);
+      if (!tokenPayload) {
+        callback(new Error('unable to decode jwt token'));
+      } else {
+        callback(null, {
+          username: tokenPayload['cognito:username'],
+          email: tokenPayload.email,
+        });
+      }
       break;
     }
     case 'facebook': {
@@ -298,23 +315,23 @@ const getProfile = async (provider, query, callback) => {
     }
     case 'instagram': {
       const instagram = purest({
-        config: purestConfig,
         provider: 'instagram',
         key: grant.instagram.key,
         secret: grant.instagram.secret,
+        config: purestConfig,
       });
 
       instagram
         .query()
-        .get('users/self')
-        .qs({ access_token })
+        .get('me')
+        .qs({ access_token, fields: 'id,username' })
         .request((err, res, body) => {
           if (err) {
             callback(err);
           } else {
             callback(null, {
-              username: body.data.username,
-              email: `${body.data.username}@strapi.io`, // dummy email as Instagram does not provide user email
+              username: body.username,
+              email: `${body.username}@strapi.io`, // dummy email as Instagram does not provide user email
             });
           }
         });
@@ -385,10 +402,146 @@ const getProfile = async (provider, query, callback) => {
         });
       break;
     }
-    default:
-      callback({
-        message: 'Unknown provider.',
+    case 'linkedin': {
+      const linkedIn = purest({
+        provider: 'linkedin',
+        config: {
+          linkedin: {
+            'https://api.linkedin.com': {
+              __domain: {
+                auth: [{ auth: { bearer: '[0]' } }],
+              },
+              '[version]/{endpoint}': {
+                __path: {
+                  alias: '__default',
+                  version: 'v2',
+                },
+              },
+            },
+          },
+        },
       });
+      try {
+        const getDetailsRequest = () => {
+          return new Promise((resolve, reject) => {
+            linkedIn
+              .query()
+              .get('me')
+              .auth(access_token)
+              .request((err, res, body) => {
+                if (err) {
+                  return reject(err);
+                }
+                resolve(body);
+              });
+          });
+        };
+
+        const getEmailRequest = () => {
+          return new Promise((resolve, reject) => {
+            linkedIn
+              .query()
+              .get('emailAddress?q=members&projection=(elements*(handle~))')
+              .auth(access_token)
+              .request((err, res, body) => {
+                if (err) {
+                  return reject(err);
+                }
+                resolve(body);
+              });
+          });
+        };
+
+        const { localizedFirstName } = await getDetailsRequest();
+        const { elements } = await getEmailRequest();
+        const email = elements[0]['handle~'];
+
+        callback(null, {
+          username: localizedFirstName,
+          email: email.emailAddress,
+        });
+      } catch (err) {
+        callback(err);
+      }
+      break;
+    }
+    case 'reddit': {
+      const reddit = purest({
+        provider: 'reddit',
+        config: purestConfig,
+        defaults: {
+          headers: {
+            'user-agent': 'strapi',
+          },
+        },
+      });
+
+      reddit
+        .query('auth')
+        .get('me')
+        .auth(access_token)
+        .request((err, res, body) => {
+          if (err) {
+            callback(err);
+          } else {
+            callback(null, {
+              username: body.name,
+              email: `${body.name}@strapi.io`, // dummy email as Reddit does not provide user email
+            });
+          }
+        });
+      break;
+    }
+    case 'auth0': {
+      const purestAuth0Conf = {};
+      purestAuth0Conf[`https://${grant.auth0.subdomain}.auth0.com`] = {
+        __domain: {
+          auth: {
+            auth: { bearer: '[0]' },
+          },
+        },
+        '{endpoint}': {
+          __path: {
+            alias: '__default',
+          },
+        },
+      };
+      const auth0 = purest({
+        provider: 'auth0',
+        config: {
+          auth0: purestAuth0Conf,
+        },
+      });
+
+      auth0
+        .get('userinfo')
+        .auth(access_token)
+        .request((err, res, body) => {
+          if (err) {
+            callback(err);
+          } else {
+            const username =
+              body.username || body.nickname || body.name || body.email.split('@')[0];
+            const email = body.email || `${username.replace(/\s+/g, '.')}@strapi.io`;
+
+            callback(null, {
+              username,
+              email,
+            });
+          }
+        });
+      break;
+    }
+    default:
+      callback(new Error('Unknown provider.'));
       break;
   }
+};
+
+const buildRedirectUri = (provider = '') =>
+  `${getAbsoluteServerUrl(strapi.config)}/connect/${provider}/callback`;
+
+module.exports = {
+  connect,
+  buildRedirectUri,
 };

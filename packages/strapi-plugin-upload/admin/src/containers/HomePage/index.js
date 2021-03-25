@@ -1,11 +1,10 @@
-import React, { useReducer, useRef, useState, useEffect } from 'react';
+import React, { useCallback, useReducer, useRef, useState, useEffect } from 'react';
 import { get, includes, toString, isEqual, intersectionWith } from 'lodash';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Header } from '@buffetjs/custom';
-import { Button } from '@buffetjs/core';
+import { Button, Padded } from '@buffetjs/core';
 import {
   PopUpWarning,
-  LoadingIndicator,
   useGlobalContext,
   generateFiltersFromSearch,
   generateSearchFromFilters,
@@ -15,7 +14,6 @@ import {
 import { formatFileForEditing, getRequestUrl, getTrad, getFileModelTimestamps } from '../../utils';
 import Container from '../../components/Container';
 import HomePageContent from './HomePageContent';
-import Padded from '../../components/Padded';
 import { useAppContext } from '../../hooks';
 import ModalStepper from '../ModalStepper';
 import { generateStringFromParams, getHeaderLabel } from './utils';
@@ -39,7 +37,14 @@ const HomePage = () => {
   const { push } = useHistory();
   const { search } = useLocation();
   const isMounted = useRef(true);
-  const { data, dataCount, dataToDelete, isLoading } = reducerState.toJS();
+  const {
+    data,
+    dataCount,
+    dataToDelete,
+    isLoading,
+    shouldRefetchData,
+    showModalConfirmButtonLoading,
+  } = reducerState.toJS();
   const pluginName = formatMessage({ id: getTrad('plugin.name') });
   const paramsKeys = ['_limit', '_start', '_q', '_sort'];
 
@@ -86,7 +91,10 @@ const HomePage = () => {
     } catch (err) {
       if (isMounted.current) {
         dispatch({ type: 'GET_DATA_ERROR' });
-        strapi.notification.error('notification.error');
+        strapi.notification.toggle({
+          type: 'warning',
+          message: { id: 'notification.error' },
+        });
       }
     }
 
@@ -106,7 +114,10 @@ const HomePage = () => {
     } catch (err) {
       if (isMounted.current) {
         dispatch({ type: 'GET_DATA_ERROR' });
-        strapi.notification.error('notification.error');
+        strapi.notification.toggle({
+          type: 'warning',
+          message: { id: 'notification.error' },
+        });
       }
     }
 
@@ -211,51 +222,37 @@ const HomePage = () => {
     push({ search: newSearch });
   };
 
-  // FIXME: the delete logic should be redone
-  const handleDeleteMediaFromModal = async id => {
-    handleClickToggleModal();
-
-    lockAppWithOverlay();
-
-    try {
-      await deleteMedia(id);
-
-      strapi.notification.success('notification.success.delete');
-
-      dispatch({
-        type: 'ON_DELETE_MEDIA_SUCCEEDED',
-        mediaId: id,
-      });
-    } catch (err) {
-      strapi.notification.error(err);
-    } finally {
-      strapi.unlockApp();
-    }
-  };
-
-  // FIXME: the delete logic should be redone
-  const handleDeleteMedias = async () => {
-    setIsPopupOpen(false);
-
-    lockAppWithOverlay();
+  const handleConfirmDeleteMedias = useCallback(async () => {
+    dispatch({ type: 'ON_DELETE_MEDIAS' });
 
     try {
       await Promise.all(dataToDelete.map(item => deleteMedia(item.id)));
 
       dispatch({
-        type: 'CLEAR_DATA_TO_DELETE',
+        type: 'ON_DELETE_MEDIAS_SUCCEEDED',
       });
     } catch (err) {
-      strapi.notification.error(err);
+      strapi.notification.toggle({
+        type: 'warning',
+        message: err,
+      });
 
       dispatch({
-        type: 'ON_DELETE_MEDIA_ERROR',
+        type: 'ON_DELETE_MEDIAS_ERROR',
       });
     } finally {
-      fetchListData();
-      strapi.unlockApp();
+      setIsPopupOpen(false);
     }
-  };
+  }, [dataToDelete]);
+
+  const handleClosedModalDeleteAll = useCallback(() => {
+    if (shouldRefetchData) {
+      fetchListData();
+    } else {
+      dispatch({ type: 'RESET_DATA_TO_DELETE' });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldRefetchData]);
 
   const handleModalClose = () => {
     resetModalState();
@@ -270,15 +267,6 @@ const HomePage = () => {
     dispatch({
       type: 'TOGGLE_SELECT_ALL',
     });
-  };
-
-  const lockAppWithOverlay = () => {
-    const overlayblockerParams = {
-      children: <div />,
-      noGradient: true,
-    };
-
-    strapi.lockApp(overlayblockerParams);
   };
 
   const resetModalState = () => {
@@ -333,11 +321,19 @@ const HomePage = () => {
     ],
   };
 
+  const handleRemoveFileFromDataToDelete = useCallback(id => {
+    dispatch({
+      type: 'ON_CHANGE_DATA_TO_DELETE',
+      id,
+    });
+  }, []);
+
   const content = canRead ? (
     <HomePageContent
       data={data}
       dataCount={dataCount}
       dataToDelete={dataToDelete}
+      isLoading={isLoading}
       onCardCheck={handleChangeCheck}
       onCardClick={handleClickEditFile}
       onClick={handleClickToggleModal}
@@ -350,28 +346,23 @@ const HomePage = () => {
   return (
     <Container>
       <Header {...headerProps} isLoading={isLoading} />
-      {isLoading ? (
-        <>
-          <Padded top bottom size="lg" />
-          <LoadingIndicator />
-        </>
-      ) : (
-        content
-      )}
+      {content}
       <ModalStepper
         initialFileToEdit={fileToEdit}
         initialStep={modalInitialStep}
         isOpen={isModalOpen}
         onClosed={handleModalClose}
-        onDeleteMedia={handleDeleteMediaFromModal}
+        onRemoveFileFromDataToDelete={handleRemoveFileFromDataToDelete}
         onToggle={handleClickToggleModal}
         refetchData={fetchListData}
       />
       <PopUpWarning
         isOpen={isPopupOpen}
+        isConfirmButtonLoading={showModalConfirmButtonLoading}
+        onConfirm={handleConfirmDeleteMedias}
+        onClosed={handleClosedModalDeleteAll}
         toggleModal={handleClickTogglePopup}
         popUpWarningType="danger"
-        onConfirm={handleDeleteMedias}
       />
       <Padded bottom size="md" />
       <Padded bottom size="md" />

@@ -255,25 +255,15 @@ const ListView = () => {
       handleClickAddField(forTarget, targetUid, headerDisplayObject);
     },
   };
-  const goToCMSettingsPage = () => {
-    const endPoint = isInContentTypeView
-      ? `/plugins/content-manager/${contentTypeKind}/${targetUid}/ctm-configurations/edit-settings/content-types`
-      : `/plugins/content-manager/ctm-configurations/edit-settings/components/${targetUid}/`;
-
-    if (!isTemporary) {
-      push(endPoint);
-    }
-  };
 
   const listInjectedComponents = useMemo(() => {
     return getComponents('listView', 'list.link', plugins, {
-      onClick: goToCMSettingsPage,
+      targetUid,
       isTemporary,
       isInContentTypeView,
       contentTypeKind,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTemporary, isInContentTypeView, contentTypeKind]);
+  }, [plugins, isTemporary, targetUid, isInContentTypeView, contentTypeKind]);
 
   const listActions = isInDevelopmentMode
     ? [...listInjectedComponents, <ListButton {...addButtonProps} key="add-button" />]
