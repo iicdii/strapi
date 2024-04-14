@@ -7145,7 +7145,7 @@ __metadata:
   resolution: "@strapi/admin-test-utils@workspace:packages/admin-test-utils"
   dependencies:
     "@juggle/resize-observer": 3.4.0
-    "@testing-library/jest-dom": 5.16.5
+    "@testing-library/jest-dom": 5.17.0
     eslint-config-custom: 4.14.0
     jest-styled-components: 7.1.1
     redux: ^4.2.1
@@ -7171,9 +7171,9 @@ __metadata:
     "@strapi/provider-audit-logs-local": 4.14.0
     "@strapi/typescript-utils": 4.14.0
     "@strapi/utils": 4.14.0
-    "@testing-library/dom": 9.2.0
-    "@testing-library/react": 14.0.0
-    "@testing-library/user-event": 14.4.3
+    "@testing-library/dom": 9.3.4
+    "@testing-library/react": 14.3.1
+    "@testing-library/user-event": 14.5.2
     axios: 1.5.0
     bcryptjs: 2.4.3
     browserslist: ^4.17.3
@@ -7425,8 +7425,8 @@ __metadata:
     "@strapi/admin-test-utils": 4.14.0
     "@strapi/design-system": 1.11.0
     "@strapi/icons": 1.11.0
-    "@testing-library/react": 14.0.0
-    "@testing-library/user-event": 14.4.3
+    "@testing-library/react": 14.3.1
+    "@testing-library/user-event": 14.5.2
     "@types/react": 18.2.7
     "@types/react-dom": 18.2.7
     "@types/react-helmet": 6.1.6
@@ -7514,8 +7514,8 @@ __metadata:
     "@strapi/helper-plugin": 4.14.0
     "@strapi/icons": 1.11.0
     "@strapi/strapi": 4.14.0
-    "@testing-library/react": 14.0.0
-    "@testing-library/user-event": 14.4.3
+    "@testing-library/react": 14.3.1
+    "@testing-library/user-event": 14.5.2
     "@types/styled-components": 5.1.26
     prop-types: ^15.8.1
     react: ^18.2.0
@@ -7556,7 +7556,7 @@ __metadata:
     "@strapi/helper-plugin": 4.14.0
     "@strapi/icons": 1.11.0
     "@strapi/utils": 4.14.0
-    "@testing-library/react": 14.0.0
+    "@testing-library/react": 14.3.1
     "@testing-library/react-hooks": 8.0.1
     fs-extra: 10.0.0
     history: ^4.9.0
@@ -7592,8 +7592,8 @@ __metadata:
     "@strapi/helper-plugin": 4.14.0
     "@strapi/icons": 1.11.0
     "@strapi/utils": 4.14.0
-    "@testing-library/react": 14.0.0
-    "@testing-library/user-event": 14.4.3
+    "@testing-library/react": 14.3.1
+    "@testing-library/user-event": 14.5.2
     bcryptjs: 2.4.3
     cheerio: ^1.0.0-rc.12
     formik: 2.4.0
@@ -7631,7 +7631,7 @@ __metadata:
     "@strapi/icons": 1.11.0
     "@strapi/provider-email-sendmail": 4.14.0
     "@strapi/utils": 4.14.0
-    "@testing-library/react": 14.0.0
+    "@testing-library/react": 14.3.1
     lodash: 4.17.21
     msw: 1.3.0
     prop-types: ^15.8.1
@@ -7695,7 +7695,7 @@ __metadata:
     "@strapi/helper-plugin": 4.14.0
     "@strapi/icons": 1.11.0
     "@strapi/utils": 4.14.0
-    "@testing-library/react": 14.0.0
+    "@testing-library/react": 14.3.1
     formik: 2.4.0
     immer: 9.0.19
     lodash: 4.17.21
@@ -7749,9 +7749,9 @@ __metadata:
     "@strapi/icons": 1.11.0
     "@strapi/provider-upload-local": 4.14.0
     "@strapi/utils": 4.14.0
-    "@testing-library/dom": 9.2.0
-    "@testing-library/react": 14.0.0
-    "@testing-library/user-event": 14.4.3
+    "@testing-library/dom": 9.3.4
+    "@testing-library/react": 14.3.1
+    "@testing-library/user-event": 14.5.2
     axios: 1.5.0
     byte-size: 7.0.1
     cropperjs: 1.6.0
@@ -7794,9 +7794,9 @@ __metadata:
     "@strapi/helper-plugin": 4.14.0
     "@strapi/icons": 1.11.0
     "@strapi/utils": 4.14.0
-    "@testing-library/dom": 9.2.0
-    "@testing-library/react": 14.0.0
-    "@testing-library/user-event": 14.4.3
+    "@testing-library/dom": 9.3.4
+    "@testing-library/react": 14.3.1
+    "@testing-library/user-event": 14.5.2
     bcryptjs: 2.4.3
     formik: 2.4.0
     grant-koa: 5.4.8
@@ -8276,7 +8276,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/dom@npm:9.2.0, @testing-library/dom@npm:^9.0.0":
+"@testing-library/dom@npm:9.3.4":
+  version: 9.3.4
+  resolution: "@testing-library/dom@npm:9.3.4"
+  dependencies:
+    "@babel/code-frame": ^7.10.4
+    "@babel/runtime": ^7.12.5
+    "@types/aria-query": ^5.0.1
+    aria-query: 5.1.3
+    chalk: ^4.1.0
+    dom-accessibility-api: ^0.5.9
+    lz-string: ^1.5.0
+    pretty-format: ^27.0.2
+  checksum: dfd6fb0d6c7b4dd716ba3c47309bc9541b4a55772cb61758b4f396b3785efe2dbc75dc63423545c039078c7ffcc5e4b8c67c2db1b6af4799580466036f70026f
+  languageName: node
+  linkType: hard
+
+"@testing-library/dom@npm:^9.0.0":
   version: 9.2.0
   resolution: "@testing-library/dom@npm:9.2.0"
   dependencies:
@@ -8292,9 +8308,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/jest-dom@npm:5.16.5":
-  version: 5.16.5
-  resolution: "@testing-library/jest-dom@npm:5.16.5"
+"@testing-library/jest-dom@npm:5.17.0":
+  version: 5.17.0
+  resolution: "@testing-library/jest-dom@npm:5.17.0"
   dependencies:
     "@adobe/css-tools": ^4.0.1
     "@babel/runtime": ^7.9.2
@@ -8305,7 +8321,7 @@ __metadata:
     dom-accessibility-api: ^0.5.6
     lodash: ^4.17.15
     redent: ^3.0.0
-  checksum: 94911f901a8031f3e489d04ac057cb5373621230f5d92bed80e514e24b069fb58a3166d1dd86963e55f078a1bd999da595e2ab96ed95f452d477e272937d792a
+  checksum: 9f28dbca8b50d7c306aae40c3aa8e06f0e115f740360004bd87d57f95acf7ab4b4f4122a7399a76dbf2bdaaafb15c99cc137fdcb0ae457a92e2de0f3fbf9b03b
   languageName: node
   linkType: hard
 
@@ -8331,9 +8347,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@testing-library/react@npm:14.0.0":
-  version: 14.0.0
-  resolution: "@testing-library/react@npm:14.0.0"
+"@testing-library/react@npm:14.3.1":
+  version: 14.3.1
+  resolution: "@testing-library/react@npm:14.3.1"
   dependencies:
     "@babel/runtime": ^7.12.5
     "@testing-library/dom": ^9.0.0
@@ -8341,16 +8357,16 @@ __metadata:
   peerDependencies:
     react: ^18.0.0
     react-dom: ^18.0.0
-  checksum: 4a54c8f56cc4a39b50803205f84f06280bb76521d6d5d4b3b36651d760c7c7752ef142d857d52aaf4fad4848ed7a8be49afc793a5dda105955d2f8bef24901ac
+  checksum: b057d4c9db5a523acfc24d7bc4665a924ab8d6f252c7f51eecf7dd30f1239413e1134925fd5cc9cbdef80496af64c04e6719b2081f89fe05ba87e8c6305bcc16
   languageName: node
   linkType: hard
 
-"@testing-library/user-event@npm:14.4.3":
-  version: 14.4.3
-  resolution: "@testing-library/user-event@npm:14.4.3"
+"@testing-library/user-event@npm:14.5.2":
+  version: 14.5.2
+  resolution: "@testing-library/user-event@npm:14.5.2"
   peerDependencies:
     "@testing-library/dom": ">=7.21.4"
-  checksum: 852c48ea6db1c9471b18276617c84fec4320771e466cd58339a732ca3fd73ad35e5a43ae14f51af51a8d0a150dcf60fcaab049ef367871207bea8f92c4b8195e
+  checksum: d76937dffcf0082fbf3bb89eb2b81a31bf5448048dd61c33928c5f10e33a58e035321d39145cefd469bb5a499c68a5b4086b22f1a44e3e7c7e817dc5f6782867
   languageName: node
   linkType: hard
 
@@ -10817,19 +10833,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aria-query@npm:^5.0.0":
-  version: 5.0.2
-  resolution: "aria-query@npm:5.0.2"
-  checksum: 2ecb77a64b9bbb030f5267b8672042b9559bdc507348d7c5efc14a6c180b06704c63481b162913f0466391837569b6d84f93ab18d73629e7bfa34c4f927c1fbc
-  languageName: node
-  linkType: hard
-
-"aria-query@npm:^5.1.3":
+"aria-query@npm:5.1.3, aria-query@npm:^5.1.3":
   version: 5.1.3
   resolution: "aria-query@npm:5.1.3"
   dependencies:
     deep-equal: ^2.0.5
   checksum: 929ff95f02857b650fb4cbcd2f41072eee2f46159a6605ea03bf63aa572e35ffdff43d69e815ddc462e16e07de8faba3978afc2813650b4448ee18c9895d982b
+  languageName: node
+  linkType: hard
+
+"aria-query@npm:^5.0.0":
+  version: 5.0.2
+  resolution: "aria-query@npm:5.0.2"
+  checksum: 2ecb77a64b9bbb030f5267b8672042b9559bdc507348d7c5efc14a6c180b06704c63481b162913f0466391837569b6d84f93ab18d73629e7bfa34c4f927c1fbc
   languageName: node
   linkType: hard
 
